@@ -28,6 +28,6 @@
     <string name="square">x^2</string>
     <string name="squareRoot">&#x221A;</string>
 
-    <string name="defaultExpressionValue"></string>
-    <string name="defaultInputValue">0</string>
+    <string name="defaultLine1"></string>
+    <string name="defaultLine2">0</string>
 </resources>

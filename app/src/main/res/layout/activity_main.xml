@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputText"
+        app:layout_constraintTop_toBottomOf="@+id/inputline2"
         app:layout_constraintVertical_bias="1.0">
 
         <TableRow
@@ -467,7 +467,7 @@
     </TableLayout>
 
     <TextView
-        android:id="@+id/inputText"
+        android:id="@+id/inputline2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="15dp"
@@ -476,7 +476,7 @@
         android:autofillHints="false"
         android:inputType="none"
         android:minWidth="48dp"
-        android:text="@string/defaultInputValue"
+        android:text="@string/defaultLine2"
         android:textAlignment="textEnd"
         android:textAllCaps="false"
         android:textColor="#000000"
@@ -485,10 +485,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expressionText" />
+        app:layout_constraintTop_toBottomOf="@+id/inputline1" />
 
     <TextView
-        android:id="@+id/expressionText"
+        android:id="@+id/inputline1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -497,7 +497,7 @@
         android:autofillHints="false"
         android:inputType="none"
         android:minWidth="48dp"
-        android:text="@string/defaultExpressionValue"
+        android:text="@string/defaultLine1"
         android:textAlignment="textEnd"
         android:textAllCaps="false"
         android:textColor="#8A8A8A"

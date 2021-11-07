@@ -11,259 +11,240 @@ import android.widget.TextView;
 
 import org.mariuszgromada.math.mxparser.Expression;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.Arrays;
-
 
 public class MainActivity extends AppCompatActivity {
     
-    private TextView InputTextView;
-    private TextView ExpressionTextView;
-    private String InputText = "";
+    private TextView line1;
+    private TextView line2;
+    private String line1str;
+    private String line2str;
+    private Double line1num;
+    private Double line2num;
     private String[] operators = {"+", "-", "*", "/", "="};
-    private boolean isInput = false;
-    private boolean isPlusMinusClicked = false;
-    private String LastInput = "";
     private String operator = "+";
-    private DecimalFormat format;
+    private String line2oldstr = "0";
+    private boolean isPressNumber = true;
+    private String remember = "";
+    // ÷
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        InputTextView = findViewById((R.id.inputText));
-        ExpressionTextView = findViewById(R.id.expressionText);
-        InputText = getString(R.string.defaultInputValue);
-        LastInput = getString(R.string.defaultInputValue);
-
-        format = new DecimalFormat("0.#");
-    }
-
-    private void setInputTextView()
-    {
-        InputTextView.setText(InputText);
-    }
-
-    private void setExpressionTextView(boolean isEqual)
-    {
-
-        if (isEqual)
-            ExpressionTextView.setText(LastInput + " " + operator + " " + InputText + " " + "=");
-        else
-            ExpressionTextView.setText(LastInput + " " + operator);
+        line1 = findViewById((R.id.inputline1));
+        line2 = findViewById(R.id.inputline2);
+        line1str = getString(R.string.defaultLine1);
+        line2str = getString(R.string.defaultLine2);
 
     }
 
-    private double calculate()
+    private Double calculate()
     {
-        Log.i("calculate", LastInput + operator + InputText);
-        Expression result = new Expression(LastInput + operator + InputText);
-        Log.i("calculate","result: " + String.valueOf(result.calculate()));
-        return result.calculate();
-    }
-
-    private void updateInputText(String addstr)
-    {
-        if (Arrays.asList(operators).contains(addstr)) //nhap phep toan
+        Double result = 0.0;
+        Double oldnum = Double.valueOf(line2oldstr);
+        Double newnum = Double.valueOf(line2str);
+        switch (operator)
         {
-            if (isInput)
-            {
-                BigDecimal bd = new BigDecimal(calculate());
-                String result = String.valueOf(bd.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
-                InputText = result;
-
-                LastInput = InputText;
-                setInputTextView();
-            }
-            else
-            {
-                LastInput = InputText;
-            }
-            operator = addstr;
-            setExpressionTextView(false);
-            isInput = false;
+            case "+": result = oldnum + newnum;break;
+            case "-": result = oldnum - newnum;break;
+            case "*": result = oldnum * newnum;break;
+            case "/": result = oldnum / newnum;break;
         }
-        else if (addstr.equals("."))
+        Log.i("oldnew", line2oldstr + " " + line2str);
+        return result;
+    }
+
+    private void pressNumber(String input)
+    {
+        if (line2str.equals(getString(R.string.defaultLine2)) || !isPressNumber) line2str = "";
+        line2str = line2str + input;
+        line2.setText(line2str);
+
+        isPressNumber = true;
+    }
+
+    private void pressOperator(String input)
+    {
+        if (remember.equals(""))
         {
-            if (InputText.indexOf(".") == -1)
-            {
-//                Log.i("pos", String.valueOf(InputText.indexOf(".") == -1));
-                InputText += addstr;
-                isInput = true;
-                setInputTextView();
-            }
-        }
-        else //nhap so
-        {
-
-            if (getString(R.string.defaultInputValue).equals(InputText) || isInput == false)
-            {
-                InputText = "";
-            }
-
-            InputText += addstr;
-            isInput = true;
-
-            setInputTextView();
+            remember = line2str;
         }
 
+        if (isPressNumber)
+        {
+            Double result = calculate();
+            line2str = removeTrailingZero(String.valueOf(result));
+            line2oldstr = line2str;
+            line2.setText(line2str);
+        }
+
+        operator = input;
+        line1.setText(removeTrailingZero(line2str) + " " + operator);
+
+        isPressNumber = false;
     }
 
-    public void zeroBTN(View view)
+    private String removeTrailingZero(String str)
     {
-        updateInputText("0");
-    }
+        int dotindex = str.indexOf('.');
 
-    public void oneBTN(View view)
-    {
-        updateInputText("1");
-
-    }
-
-    public void twoBTN(View view)
-    {
-        updateInputText("2");
-
-    }
-
-    public void threeBTN(View view)
-    {
-        updateInputText("3");
-
-    }
-
-    public void fourBTN(View view)
-    {
-        updateInputText("4");
-
-    }
-
-    public void fiveBTN(View view)
-    {
-        updateInputText("5");
-
-    }
-
-    public void sixBTN(View view)
-    {
-        updateInputText("6");
-
-    }
-
-    public void sevenBTN(View view)
-    {
-        updateInputText("7");
-
-    }
-
-    public void eightBTN(View view)
-    {
-        updateInputText("8");
-
-    }
-
-    public void nineBTN(View view)
-    {
-        updateInputText("9");
-
+        if (dotindex != - 1)
+            for (int i = str.length()-1; i >= dotindex; i--)
+            {
+                if (str.charAt(i) != '0' && str.charAt(i) != '.')
+                {
+                    break;
+                }
+                str = str.substring(0, i);
+            }
+        Log.i("zero", str);
+        return str;
     }
 
     public void plusMinusBTN(View view)
     {
-        if (!InputText.equals(getString(R.string.defaultInputValue)))
+        if (!line2str.equals(getString(R.string.defaultLine2)))
         {
-            isPlusMinusClicked = !isPlusMinusClicked;
-
-            if (isPlusMinusClicked)
-            {
-                InputText = '-' + InputText;
-            }
+            if (line2str.charAt(0) == '-')
+                line2str = line2str.substring(1, line2str.length());
             else
-            {
-                InputText = InputText.substring(1);
-            }
+                line2str = "-" + line2str;
 
-            setInputTextView();
+            line2.setText(line2str);
         }
     }
 
     public void pointBTN(View view)
     {
-        updateInputText(".");
+        if (line2str.equals(getString(R.string.defaultLine2)) || !isPressNumber) line2str = "0";
+        int dotpos = line2str.indexOf('.');
+        if (dotpos == -1)
+            line2str += ".";
+        line2.setText(line2str);
+        isPressNumber = true;
     }
 
     //////////////
 
     public void equalsBTN(View view)
     {
-        isInput = false;
-
-        setExpressionTextView(true);
-        BigDecimal bd = new BigDecimal(calculate());
-        String result = String.valueOf(bd.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
-        InputText = result;
-        LastInput = InputText;
-        setInputTextView();
+        line1.setText(line2oldstr + " " + operator + " " + line2str + " =");
+        Double result = calculate();
+        line2str = removeTrailingZero(String.valueOf(result));
+        line2oldstr = line2str;
+        line2.setText(line2str);
     }
 
     public void addBTN(View view)
     {
-        updateInputText("+");
+        pressOperator("+");
     }
 
     public void subtractBTN(View view)
     {
-        updateInputText("-");
+        pressOperator("-");
     }
 
     public void multiplyBTN(View view)
     {
-        updateInputText("*");
+        pressOperator("*");
 
     }
 
     public void divideBTN(View view)
     {
-        updateInputText("/");
-
+        pressOperator("/");
     }
+
+    //ok
 
     public void backspaceBTN(View view)
     {
-        isInput = true;
-
-        if (InputText.length() != 0)
+        if (line2str.charAt(0) == '-')
         {
-            InputText = InputText.substring(0, InputText.length()-1);
+            if (line2str.length() > 2)
+                line2str = line2str.substring(0, line2.length()-1);
+            else
+                line2str = getString(R.string.defaultLine2);
+        }
+        else
+        {
+            if (line2str.length() > 1)
+                line2str = line2str.substring(0, line2.length()-1);
+            else
+                line2str = getString(R.string.defaultLine2);
         }
 
-        if (InputText.length() == 0 || (InputText.length() == 1 && InputText.equals("-")))
-        {
-            InputText = getString(R.string.defaultInputValue);
-        }
-
-        setInputTextView();
+        line2.setText(line2str);
     }
 
     public void clearBTN(View view)
     {
-        InputText = getString(R.string.defaultInputValue);
-        InputTextView.setText(InputText);
-        ExpressionTextView.setText(R.string.defaultExpressionValue);
-        isInput = false;
+        line2str = getString(R.string.defaultLine2);
+        line2.setText(line2str);
+        line1.setText(getString(R.string.defaultLine1));
+        line1str = "0";
+        line2oldstr = "0";
         operator = "+";
-        LastInput = getString(R.string.defaultInputValue);
-        isPlusMinusClicked = false;
-
+        isPressNumber = true;
     }
 
     public void clearEntryBTN(View view)
     {
-        isInput = true;
-        InputText = getString(R.string.defaultInputValue);
-        setInputTextView();
+        line2str = getString(R.string.defaultLine2);
+        line2.setText(line2str);
+
+        isPressNumber = true;
+    }
+
+    public void zeroBTN(View view)
+    {
+        pressNumber("0");
+    }
+
+    public void oneBTN(View view)
+    {
+        pressNumber("1");
+    }
+
+    public void twoBTN(View view)
+    {
+        pressNumber("2");
+    }
+
+    public void threeBTN(View view)
+    {
+        pressNumber("3");
+    }
+
+    public void fourBTN(View view)
+    {
+        pressNumber("4");
+    }
+
+    public void fiveBTN(View view)
+    {
+        pressNumber("5");
+    }
+
+    public void sixBTN(View view)
+    {
+        pressNumber("6");
+    }
+
+    public void sevenBTN(View view)
+    {
+        pressNumber("7");
+    }
+
+    public void eightBTN(View view)
+    {
+        pressNumber("8");
+    }
+
+    public void nineBTN(View view)
+    {
+        pressNumber("9");
     }
 }
