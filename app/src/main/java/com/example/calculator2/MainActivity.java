@@ -16,11 +16,11 @@ public class MainActivity extends AppCompatActivity {
     
     private TextView line1;
     private TextView line2;
-    private String line2str;
     private String operator = "+";
     private String line2oldstr = "0";
     private boolean isPressNumber = true;
     private String remember = "";
+    private boolean isPressEqual = false;
     // ÷
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,15 +30,30 @@ public class MainActivity extends AppCompatActivity {
 
         line1 = findViewById((R.id.inputline1));
         line2 = findViewById(R.id.inputline2);
-        line2str = getString(R.string.defaultLine2);
-
     }
 
-    private Double calculate()
+//    private Double calculate()
+//    {
+//        String line2str = line2.getText().toString();
+//        Double result = 0.0;
+//        Double oldnum = Double.valueOf(line2oldstr);
+//        Double newnum = Double.valueOf(line2str);
+//        switch (operator)
+//        {
+//            case "+": result = oldnum + newnum;break;
+//            case "-": result = oldnum - newnum;break;
+//            case "*": result = oldnum * newnum;break;
+//            case "/": result = oldnum / newnum;break;
+//        }
+//        Log.i("oldnew", line2oldstr + " " + line2str);
+//        return result;
+//    }
+
+    private Double calculate(String _old,String _new)
     {
         Double result = 0.0;
-        Double oldnum = Double.valueOf(line2oldstr);
-        Double newnum = Double.valueOf(line2str);
+        Double oldnum = Double.valueOf(_old);
+        Double newnum = Double.valueOf(_new);
         switch (operator)
         {
             case "+": result = oldnum + newnum;break;
@@ -46,29 +61,38 @@ public class MainActivity extends AppCompatActivity {
             case "*": result = oldnum * newnum;break;
             case "/": result = oldnum / newnum;break;
         }
-        Log.i("oldnew", line2oldstr + " " + line2str);
         return result;
     }
 
     private void pressNumber(String input)
     {
-        if (line2str.equals(getString(R.string.defaultLine2)) || !isPressNumber) line2str = "";
+        String line2str = line2.getText().toString();
+        if (isPressEqual)
+        {
+            clearBTN(null);
+            line2str = "";
+        }
+        else if (line2str.equals(getString(R.string.defaultLine2)) || !isPressNumber)
+        {
+            line2str = "";
+        }
+
         line2str = line2str + input;
         line2.setText(line2str);
 
         isPressNumber = true;
+        isPressEqual = false;
+
+        remember = line2str;
     }
 
     private void pressOperator(String input)
     {
-        if (remember.equals(""))
-        {
-            remember = line2str;
-        }
+        String line2str = line2.getText().toString();
 
         if (isPressNumber)
         {
-            Double result = calculate();
+            Double result = calculate(line2oldstr, line2str);
             line2str = removeTrailingZero(String.valueOf(result));
             line2oldstr = line2str;
             line2.setText(line2str);
@@ -78,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         line1.setText(removeTrailingZero(line2str) + " " + operator);
 
         isPressNumber = false;
+        isPressEqual = false;
     }
 
     private String removeTrailingZero(String str)
@@ -93,12 +118,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 str = str.substring(0, i);
             }
-        Log.i("zero", str);
+
         return str;
     }
 
     public void plusMinusBTN(View view)
     {
+        String line2str = line2.getText().toString();
+
+        line2str = line2.getText().toString();
         if (!line2str.equals(getString(R.string.defaultLine2)))
         {
             if (line2str.charAt(0) == '-')
@@ -108,10 +136,16 @@ public class MainActivity extends AppCompatActivity {
 
             line2.setText(line2str);
         }
+
+        remember = line2.getText().toString();
+
+        isPressNumber = true;
     }
 
     public void pointBTN(View view)
     {
+        String line2str = line2.getText().toString();
+
         if (line2str.equals(getString(R.string.defaultLine2)) || !isPressNumber) line2str = "0";
         int dotpos = line2str.indexOf('.');
         if (dotpos == -1)
@@ -124,11 +158,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void equalsBTN(View view)
     {
-        line1.setText(line2oldstr + " " + operator + " " + line2str + " =");
-        Double result = calculate();
-        line2str = removeTrailingZero(String.valueOf(result));
-        line2oldstr = line2str;
-        line2.setText(line2str);
+        String line1str = line1.getText().toString();
+        Double result = 0.0;
+
+        if (line1str.indexOf('=') == -1)
+        {
+            line1.setText(line2oldstr + " " + operator + " " + remember + " =");
+            result = calculate(line2oldstr, remember);
+        }
+        else
+        {
+            String line2str = line2.getText().toString();
+            line1.setText(line2str + " " + operator + " " + remember + " =");
+            result = calculate(line2str, remember);
+        }
+
+        line2.setText(removeTrailingZero(String.valueOf(result)));
+        line2oldstr = removeTrailingZero(String.valueOf(result));
+        isPressNumber = false;
+        isPressEqual = true;
     }
 
     public void addBTN(View view)
@@ -156,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void backspaceBTN(View view)
     {
+        String line2str = line2.getText().toString();
+
         if (line2str.charAt(0) == '-')
         {
             if (line2str.length() > 2)
@@ -176,8 +226,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void clearBTN(View view)
     {
-        line2str = getString(R.string.defaultLine2);
-        line2.setText(line2str);
+
+        line2.setText(getString(R.string.defaultLine2));
         line1.setText(getString(R.string.defaultLine1));
         line2oldstr = "0";
         operator = "+";
@@ -186,6 +236,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void clearEntryBTN(View view)
     {
+        String line2str = line2.getText().toString();
+
         line2str = getString(R.string.defaultLine2);
         line2.setText(line2str);
 
