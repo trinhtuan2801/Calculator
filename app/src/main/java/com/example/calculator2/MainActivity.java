@@ -16,11 +16,7 @@ public class MainActivity extends AppCompatActivity {
     
     private TextView line1;
     private TextView line2;
-    private String line1str;
     private String line2str;
-    private Double line1num;
-    private Double line2num;
-    private String[] operators = {"+", "-", "*", "/", "="};
     private String operator = "+";
     private String line2oldstr = "0";
     private boolean isPressNumber = true;
@@ -34,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         line1 = findViewById((R.id.inputline1));
         line2 = findViewById(R.id.inputline2);
-        line1str = getString(R.string.defaultLine1);
         line2str = getString(R.string.defaultLine2);
 
     }
@@ -184,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
         line2str = getString(R.string.defaultLine2);
         line2.setText(line2str);
         line1.setText(getString(R.string.defaultLine1));
-        line1str = "0";
         line2oldstr = "0";
         operator = "+";
         isPressNumber = true;
